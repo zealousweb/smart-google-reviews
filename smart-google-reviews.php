@@ -74,6 +74,10 @@ if ( !function_exists( 'ZWSGR' ) ) {
 		require_once( ZWSGR_DIR . '/inc/front/class.' . ZWSGR_PREFIX . '.front.filter.php' );
 	}
 
+	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.jwth.php' );	
+	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.gmbi.php' );
+	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.gmbdp.php' );
+	require_once( ZWSGR_DIR . '/inc/lib/api/class.' . ZWSGR_PREFIX . '.zba.php' );
 	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.lib.php' );
 
 	//Initialize all the things.
