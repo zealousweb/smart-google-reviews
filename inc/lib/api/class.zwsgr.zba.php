@@ -80,18 +80,18 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
          *
          * @return WP_REST_Response The response containing the authorization URL to redirect the user for OAuth.
          */
-        public function zwsgr_handle_rest_initiated_oauth() {
+        public function zwsgr_handle_rest_initiated_oauth($zwsgr_request) {
 
             // Extract user information from the POST data, sanitize the inputs to prevent XSS
-            $zwsgr_user_id       = isset($_POST['zwsgr_user_id'])       ? sanitize_text_field($_POST['zwsgr_user_id'])       : '';
-            $zwsgr_user_email    = isset($_POST['zwsgr_user_email'])    ? sanitize_email($_POST['zwsgr_user_email'])         : '';
-            $zwsgr_user_site_url = isset($_POST['zwsgr_user_site_url']) ? sanitize_text_field($_POST['zwsgr_user_site_url']) : '';
+            $zwsgr_user_name     = isset($zwsgr_request['zwsgr_user_name'])     ? sanitize_text_field($zwsgr_request['zwsgr_user_name'])     : '';
+            $zwsgr_user_email    = isset($zwsgr_request['zwsgr_user_email'])    ? sanitize_email($zwsgr_request['zwsgr_user_email'])         : '';
+            $zwsgr_user_site_url = isset($zwsgr_request['zwsgr_user_site_url']) ? sanitize_text_field($zwsgr_request['zwsgr_user_site_url']) : '';
 
             // Validate that required fields are provided in the POST request
-            if (empty($zwsgr_user_id) || empty($zwsgr_user_email) || empty($zwsgr_user_site_url)) {
+            if (empty($zwsgr_user_name) || empty($zwsgr_user_email) || empty($zwsgr_user_site_url)) {
                 wp_send_json_error([
                     'code' => 'missing_required_fields',
-                    'message' => 'Required data is missing: user_id, user_email, and site_url. Please provide all the necessary fields.',
+                    'message' => 'Required data is missing: user_name, user_email, and site_url. Please provide all the necessary fields.',
                 ], 400);
             }
 
@@ -116,16 +116,6 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
                 'post_status'    => 'publish',
                 'meta_query'     => array(
                     array(
-                        'key'     => 'zwsgr_user_id',
-                        'value'   => $zwsgr_user_id,
-                        'compare' => '='
-                    ),
-                    array(
-                        'key'     => 'zwsgr_user_email',
-                        'value'   => $zwsgr_user_email,
-                        'compare' => '='
-                    ),
-                    array(
                         'key'     => 'zwsgr_user_site_url',
                         'value'   => $zwsgr_user_site_url,
                         'compare' => '='
@@ -136,20 +126,21 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
 
             // Prepare the oAuth Data to save the OAuth details
             $zwsgr_oauth_data = array(
-                'post_title'   => $zwsgr_user_id .' - '. $zwsgr_user_site_url,
+                'post_title'   => $zwsgr_user_name .' - '. $zwsgr_user_site_url,
                 'post_content' => '',
                 'post_status'  => 'publish',
                 'post_type'    => 'zwsgr_oauth_data',
                 'meta_input'   => array(
-                    'zwsgr_user_id'       => $zwsgr_user_id,
+                    'zwsgr_user_name'     => $zwsgr_user_name,
                     'zwsgr_user_email'    => $zwsgr_user_email,
                     'zwsgr_user_site_url' => $zwsgr_user_site_url,
-                    'zwsgr_oauth_status'  => 'in_progress',
+                    'zwsgr_oauth_status'  => 'IN_PROGRESS',
                 ),
             );
 
              // Check if the oauth data already exists, and update or insert accordingly
             if ($zwsgr_oauth_id) {
+
                 // Update the existing post if it was found
                 $zwsgr_oauth_data['ID'] = $zwsgr_oauth_id;
                 $zwsgr_oauth_id = wp_update_post($zwsgr_oauth_data);
@@ -179,7 +170,7 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
 
             // Create the state parameter with all required information
             $zwsgr_gmb_state = urlencode(json_encode([
-                'zwsgr_user_id'       => $zwsgr_user_id,
+                'zwsgr_user_name'     => $zwsgr_user_name,
                 'zwsgr_user_email'    => $zwsgr_user_email,
                 'zwsgr_user_site_url' => $zwsgr_user_site_url
             ]));
@@ -274,8 +265,8 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
                 'fields' => 'ids',
                 'meta_query' => [
                     [
-                        'key' => 'zwsgr_user_id', 
-                        'value' => $zwsgr_jwt_payload['zwsgr_user_id'], 
+                        'key' => 'zwsgr_user_name', 
+                        'value' => $zwsgr_jwt_payload['zwsgr_user_name'], 
                         'compare' => '='
                     ],
                     [

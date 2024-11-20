@@ -42,7 +42,7 @@ if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 
 			// Retrieve stored meta values for OAuth connection details
 			$zwsgr_user_email    	 = get_post_meta($zwsgr_oauth_post->ID, 'zwsgr_user_email', true);
-			$zwsgr_user_id 		 	 = get_post_meta($zwsgr_oauth_post->ID, 'zwsgr_user_id', true);
+			$zwsgr_user_name 	     = get_post_meta($zwsgr_oauth_post->ID, 'zwsgr_user_name', true);
 			$zwsgr_user_site_url 	 = get_post_meta($zwsgr_oauth_post->ID, 'zwsgr_user_site_url', true);
 			$zwsgr_gmb_access_token  = get_post_meta($zwsgr_oauth_post->ID, 'zwsgr_gmb_access_token', true);
 			$zwsgr_gmb_refresh_token = get_post_meta($zwsgr_oauth_post->ID, 'zwsgr_gmb_refresh_token', true);
@@ -60,8 +60,8 @@ if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 					<td><input type="text" value="' . esc_attr($zwsgr_user_email) . '" readonly class="regular-text" style="width:100%;" /></td>
 				</tr>
 				<tr>
-					<th><label for="zwsgr_user_id">' . __('User ID', 'zw-smart-google-reviews') . '</label></th>
-					<td><input type="text" value="' . esc_attr($zwsgr_user_id) . '" readonly class="regular-text" style="width:100%;" /></td>
+					<th><label for="zwsgr_user_name">' . __('User Name', 'zw-smart-google-reviews') . '</label></th>
+					<td><input type="text" value="' . esc_attr($zwsgr_user_name) . '" readonly class="regular-text" style="width:100%;" /></td>
 				</tr>
 				<tr>
 					<th><label for="zwsgr_user_site_url">' . __('Site URL', 'zw-smart-google-reviews') . '</label></th>

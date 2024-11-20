@@ -70,14 +70,25 @@ if ( ! class_exists( 'ZWSGR_JWT_HANDLER' ) ) {
 
         public function zwsgr_verify_jwt_token($zwsgr_jwt_token) {
 
+            // Helper function to handle Base64 URL decoding
+            function zwsgr_base64url_decode($data) {
+                $data = str_replace(['-', '_'], ['+', '/'], $data);
+                $padding = strlen($data) % 4;
+                if ($padding) {
+                    $data .= str_repeat('=', 4 - $padding);
+                }
+                return base64_decode($data);
+            }
+
             $parts = explode('.', $zwsgr_jwt_token);
             if (count($parts) !== 3) {
                 return false;
-            }
+            }            
         
-            $header              = json_decode(base64_decode($parts[0]), true);
-            $zwsgr_oauth_payload = json_decode(base64_decode($parts[1]), true);
+            $header              = json_decode(zwsgr_base64url_decode($parts[0]), true);
+            $zwsgr_oauth_payload = json_decode(zwsgr_base64url_decode($parts[1]), true);
             $signature_provided  = $parts[2];
+
         
             // Retrieve the secret for the user ID in the payload
             $zwsgr_oauth_id = get_posts([
@@ -86,8 +97,8 @@ if ( ! class_exists( 'ZWSGR_JWT_HANDLER' ) ) {
                 'fields' => 'ids',
                 'meta_query' => [
                     [
-                        'key' => 'zwsgr_user_id', 
-                        'value' => $zwsgr_oauth_payload['zwsgr_user_id'], 
+                        'key' => 'zwsgr_user_name', 
+                        'value' => $zwsgr_oauth_payload['zwsgr_user_name'], 
                         'compare' => '='
                     ]
                 ]

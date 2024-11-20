@@ -45,9 +45,9 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Data_Processor' ) ) {
                 $zwsgr_oauth_state = json_decode(urldecode($_GET['state']), true);
         
                 // Retrieve the user's ID, email, and site URL from the 'state' parameter
-                if ( isset($zwsgr_oauth_state['zwsgr_user_id'], $zwsgr_oauth_state['zwsgr_user_email'], $zwsgr_oauth_state['zwsgr_user_site_url']) ) {
+                if ( isset($zwsgr_oauth_state['zwsgr_user_name'], $zwsgr_oauth_state['zwsgr_user_email'], $zwsgr_oauth_state['zwsgr_user_site_url']) ) {
                     
-                    $zwsgr_user_id       = sanitize_text_field($zwsgr_oauth_state['zwsgr_user_id']);
+                    $zwsgr_user_name     = sanitize_text_field($zwsgr_oauth_state['zwsgr_user_name']);
                     $zwsgr_user_email    = sanitize_email($zwsgr_oauth_state['zwsgr_user_email']);
                     $zwsgr_user_site_url = sanitize_text_field($zwsgr_oauth_state['zwsgr_user_site_url']);
         
@@ -73,8 +73,8 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Data_Processor' ) ) {
                         'post_status'    => 'publish',
                         'meta_query'     => array(
                             array(
-                                'key'     => 'zwsgr_user_id',
-                                'value'   => $zwsgr_user_id,
+                                'key'     => 'zwsgr_user_name',
+                                'value'   => $zwsgr_user_name,
                                 'compare' => '='
                             ),
                             array(
@@ -134,7 +134,7 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Data_Processor' ) ) {
 
                                             // Generate JWT token for the verified user
                                             $zwsgr_jwt_payload = [
-                                                'zwsgr_user_id'       => $zwsgr_user_id,
+                                                'zwsgr_user_name'     => $zwsgr_user_name,
                                                 'zwsgr_user_email'    => $zwsgr_user_email,
                                                 'zwsgr_user_site_url' => $zwsgr_user_site_url
                                             ];
@@ -155,8 +155,14 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Data_Processor' ) ) {
                                             // Ensure the URL is safe and properly formed
                                             $zwsgr_user_site_url = esc_url_raw($zwsgr_user_site_url);
 
-                                            // Construct the redirect URL with the authorization code
-                                            $zwsgr_redirect_url = add_query_arg('auth_code', $zwsgr_auth_code, $zwsgr_user_site_url);
+                                            // Construct the redirect URL with the authorization code and consent
+                                            $zwsgr_redirect_url = add_query_arg(
+                                                array(
+                                                    'auth_code' => $zwsgr_auth_code,
+                                                    'consent'   => 'true'
+                                                ),
+                                                $zwsgr_user_site_url
+                                            );
 
                                             // Redirect to the URL safely
                                             wp_redirect($zwsgr_redirect_url);
