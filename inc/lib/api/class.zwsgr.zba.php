@@ -1,6 +1,6 @@
 <?php
 /**
- * ZWSGR_BACKEND_API Class
+ * Zwsgr_Backend_API Class
  *
  * Handles the API functionality.
  *
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
+if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
     
-    class ZWSGR_BACKEND_API {
+    class Zwsgr_Backend_API {
 
         private $client;
 
@@ -29,7 +29,7 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
             // Access the Google Client through the connector
             $this->client = $zwsgr_gmb_connector->get_client();
 
-            $zwsgr_jwt_handler = new ZWSGR_JWT_HANDLER();
+            $zwsgr_jwt_handler = new Zwsgr_Jwt_Handler();
 
             $this->jwt_handler = $zwsgr_jwt_handler->get_jwt_handler();
 
@@ -62,6 +62,7 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
                 'permission_callback' => '__return_true',
             ]);
 
+            // A custom REST API route for getting access token using jwt token
             register_rest_route('zwsgr/v1', '/get-access-token', [
                 'methods' => 'POST',
                 'callback' => [$this, 'zwsgr_handle_access_token_request'],
@@ -109,12 +110,12 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
 
             }
 
-            // Check if a oAuth data already exists with the same user_id, user_email, and site_url
+            // Check if a oAuth data already exists with the same site_url
             $zwsgr_oauth_id = get_posts(array(
-                'post_type'      => 'zwsgr_oauth_data',
-                'posts_per_page' => 1,
-                'post_status'    => 'publish',
-                'meta_query'     => array(
+                'post_type'       => 'zwsgr_oauth_data',
+                'posts_per_page'  => 1,
+                'post_status'     => 'publish',
+                'meta_query'      => array(
                     array(
                         'key'     => 'zwsgr_user_site_url',
                         'value'   => $zwsgr_user_site_url,
@@ -143,14 +144,14 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
 
                 // Update the existing post if it was found
                 $zwsgr_oauth_data['ID'] = $zwsgr_oauth_id;
-                $zwsgr_oauth_id = wp_update_post($zwsgr_oauth_data);
+                $zwsgr_oauth_id         = wp_update_post($zwsgr_oauth_data);
 
                 // Handle any errors during the post update
                 if (is_wp_error($zwsgr_oauth_id)) {
                     wp_send_json_error([
                         'code'    => 'oauth_update_failed',
                         'message' => 'Failed to update OAuth data. Please try again later or contact support.'
-                    ], 500); // 500 Internal Server Error
+                    ], 500);
                 }
 
             } else {
@@ -177,25 +178,48 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
 
             // Set the auth URL with the 'state' parameter
             $this->client->setState($zwsgr_gmb_state);
+
             $zwsgr_oauth_url = $this->client->createAuthUrl();
 
-            // Send a success response with the auth_url in JSON format
-            wp_send_json_success([
-                'code'    => 'auth_url_generated',
-                'message' => 'The authentication URL has been successfully generated. Please visit the link to authenticate.',
-                'data'    => [
-                    'zwsgr_oauth_url' => $zwsgr_oauth_url
-                ]
-            ]);
+            // Check if the OAuth URL was generated successfully
+            if ($zwsgr_oauth_url) {
+        
+                // Send a success response with the auth_url in JSON format
+                wp_send_json_success([
+                    'code'    => 'auth_url_generated',
+                    'message' => 'The authentication URL has been successfully generated. Please visit the link to authenticate.',
+                    'data'    => [
+                        'zwsgr_oauth_url' => $zwsgr_oauth_url
+                    ]
+                ]);
+
+            } else {
+
+                 // If OAuth URL wasn't generated, send an error response
+                wp_send_json_error([
+                    'code'    => 'auth_url_generaton_error',
+                    'message' => 'Failed to generate the OAuth URL. Please try again later.'
+                ], 500);
+
+            }
     
         }
 
-
+        /**
+         * Handles the request to generate a JWT token using the provided authorization code.
+         *
+         * This function validates the provided authorization code, checks if it's associated with a valid OAuth ID,
+         * retrieves the JWT token if valid, invalidates the authorization code, and returns the JWT token in the response.
+         *
+         * @param WP_REST_Request $zwsgr_request The request object containing the authorization code.
+         * @return void JSON response with either the JWT token or an error message.
+         */
         public function zwsgr_handle_jwt_token_request($zwsgr_request) {
 
+            // Sanitize the authorization code received from the request to prevent XSS
             $zwsgr_auth_code = sanitize_text_field($zwsgr_request->get_param('zwsgr_auth_code'));
         
-            // Find the post ID associated with this auth code
+            // Find the oAuth ID associated with this authcode
             $zwsgr_oauth_id = get_posts([
                 'post_type' => 'zwsgr_oauth_data',
                 'posts_per_page' => 1,
@@ -223,14 +247,27 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
                 delete_post_meta($zwsgr_oauth_id, 'zwsgr_auth_code');
                 delete_post_meta($zwsgr_oauth_id, 'zwsgr_auth_code_expiry');
         
-                // Return the JWT token as JSON on success
-                wp_send_json_success([
-                    'code'    => 'jwt_token_granted',
-                    'message' => 'The JWT token has been successfully granted.',
-                    'data'    => [
-                        'zwsgr_jwt_token' => $zwsgr_jwt_token
-                    ]
-                ]);
+                // Check if the JWT token is present
+                if ($zwsgr_jwt_token) {
+
+                    // Return the JWT token as JSON on success
+                    wp_send_json_success([
+                        'code'    => 'jwt_token_granted',
+                        'message' => 'The JWT token has been successfully granted.',
+                        'data'    => [
+                            'zwsgr_jwt_token' => $zwsgr_jwt_token
+                        ]
+                    ]);
+
+                } else {
+                    
+                    // Return an error if the JWT token is not found
+                    wp_send_json_error([
+                        'code'    => 'jwt_token_missing',
+                        'message' => 'JWT token not found for the provided OAuth ID.'
+                    ], 400);
+
+                }
 
             } else {
 
@@ -244,13 +281,26 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
             
         }
 
+        /**
+         * Handles the request to refresh the access token using a JWT token.
+         *
+         * This function validates the provided JWT token, verifies its integrity, and ensures that it's not expired.
+         * It retrieves the associated OAuth ID for the user, then uses the stored refresh token to refresh the access token
+         * from the Google My Business API. If successful, the new access token is saved in the database and returned in the response.
+         * If any step fails, an appropriate error message is returned.
+         *
+         * @param WP_REST_Request $zwsgr_request The request object containing the JWT token to be validated.
+         * @return void JSON response with either the new access token or an error message.
+         */
         function zwsgr_handle_access_token_request($zwsgr_request) {
 
+            // Sanitize and retrieve the JWT token from the request
             $zwsgr_jwt_token = sanitize_text_field($zwsgr_request->get_param('zwsgr_jwt_token'));
         
-            // Decode and verify the JWT token
+            // Decode and verify the JWT token to extract the payload
             $zwsgr_jwt_payload = $this->jwt_handler->zwsgr_verify_jwt_token($zwsgr_jwt_token);
 
+            // If the JWT token is invalid or expired, return an error
             if (!$zwsgr_jwt_payload) {
                 wp_send_json_error([
                     'code' => 'invalid_jwt_token',
@@ -258,25 +308,21 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
                 ], 401);
             }
         
-            // Retrieve the post ID associated with the user ID in the JWT payload
+            // Retrieve the oAuth ID associated with the user ID in the JWT payload
             $zwsgr_oauth_id = get_posts([
                 'post_type' => 'zwsgr_oauth_data',
                 'posts_per_page' => 1,
                 'fields' => 'ids',
                 'meta_query' => [
                     [
-                        'key' => 'zwsgr_user_name', 
-                        'value' => $zwsgr_jwt_payload['zwsgr_user_name'], 
-                        'compare' => '='
-                    ],
-                    [
-                        'key' => 'zwsgr_user_email', 
-                        'value' => $zwsgr_jwt_payload['zwsgr_user_email'], 
+                        'key' => 'zwsgr_user_site_url', 
+                        'value' => $zwsgr_jwt_payload['zwsgr_user_site_url'], 
                         'compare' => '='
                     ]
                 ]
             ])[0] ?? null;
         
+            // If no OAuth connection is found, return an error
             if (!$zwsgr_oauth_id) {
                 wp_send_json_error([
                     'code' => 'oauth_connection_missing',
@@ -284,41 +330,41 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
                 ], 404);
             }
 
-            // Retrieve the refresh token from the database or another secure source
+            // Retrieve the stored refresh token from the database
             $zwsgr_gmb_refresh_token = get_post_meta($zwsgr_oauth_id, 'zwsgr_gmb_refresh_token', true);
 
+            // If no refresh token is found, return an error
             if (!$zwsgr_gmb_refresh_token) {
                 wp_send_json_error([
                     'code'    => 'missing_refresh_token',
                     'message' => 'Refresh token not found. Please authenticate again.',
-                ], 400); // Bad Request
+                ], 400);
             }
             
-            // Attempt to refresh the token
+            // Attempt to refresh the access token using the stored refresh token
             try {
                 $this->client->refreshToken($zwsgr_gmb_refresh_token);
             } catch (Exception $e) {
+                // If the token refresh fails, return an error
                 wp_send_json_error([
                     'code'    => 'token_refresh_failed',
                     'message' => 'Failed to refresh the token. Please try again later.',
                     'error'   => $e->getMessage()
-                ], 500); // 500 Internal Server Error
+                ], 500);
             }
 
-            // Retrieve the new access token
+            // Retrieve the new access token from the client
             $zwsgr_new_access_token = $this->client->getAccessToken();
         
+            // If the new access token is not valid, return an error
             if (!$zwsgr_new_access_token || !isset($zwsgr_new_access_token['access_token'])) {
                 wp_send_json_error([
                     'code' => 'token_refresh_failed',
                     'message' => 'Failed to refresh access token. Please try again or contact support.',
                 ], 401);
             }
-        
-            // Update the access token in post meta
-            update_post_meta($zwsgr_oauth_id, 'zwsgr_gmb_access_token', $zwsgr_new_access_token['access_token']);
 
-            // Return success response with the new access token
+            // Return a success response with the new access token
             wp_send_json_success([
                 'message' => 'Access token refreshed successfully.',
                 'data'    => [
@@ -331,6 +377,6 @@ if ( ! class_exists( 'ZWSGR_BACKEND_API' ) ) {
     }
 
     // Instantiate the class
-    new ZWSGR_BACKEND_API();
+    new Zwsgr_Backend_API();
 
 }

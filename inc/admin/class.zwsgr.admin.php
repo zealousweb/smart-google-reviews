@@ -10,7 +10,9 @@
  */
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( !class_exists( 'ZWSGR_Admin' ) ) {
 
@@ -19,13 +21,10 @@ if ( !class_exists( 'ZWSGR_Admin' ) ) {
 	 */
 	class ZWSGR_Admin {
 
-		
 		function __construct() {
 			
 
 		}
-
-		
 
 	}
 }

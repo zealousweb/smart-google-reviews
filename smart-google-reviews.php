@@ -54,10 +54,6 @@ if ( !defined( 'ZWSGR_PREFIX' ) ) {
 	define( 'ZWSGR_PREFIX', 'zwsgr' ); // Plugin prefix
 }
 
-if( !defined( 'ZWSGR_POST_TYPE' ) ) {
-	define( 'ZWSGR_POST_TYPE', 'zuserreg_data' ); // Plugin Google Reviews post type name
-}
-
 /**
  * Initialize the main class
  */
@@ -66,12 +62,7 @@ if ( !function_exists( 'ZWSGR' ) ) {
 	if ( is_admin() ) {
 		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.php' );
 		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.action.php' );
-		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.filter.php' );
-		
-	} else {
-		require_once( ZWSGR_DIR . '/inc/front/class.' . ZWSGR_PREFIX . '.front.php' );
-		require_once( ZWSGR_DIR . '/inc/front/class.' . ZWSGR_PREFIX . '.front.action.php' );
-		require_once( ZWSGR_DIR . '/inc/front/class.' . ZWSGR_PREFIX . '.front.filter.php' );
+		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.filter.php' );		
 	}
 
 	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.jwth.php' );	

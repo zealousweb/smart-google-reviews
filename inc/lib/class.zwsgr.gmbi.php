@@ -55,6 +55,7 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Initializer' ) ) {
 
     }
 
-    // Instantiate the class to initialize the Google API client when this file is included.
+    // Instantiate the class
     new Zwsgr_Google_My_Business_Initializer();
+    
 }

@@ -27,6 +27,7 @@ if ( !class_exists( 'ZWSGR' ) ) {
 				self::$_instance = new self();
 
 			return self::$_instance;
+
 		}
 
 		function __construct() {
@@ -36,24 +37,21 @@ if ( !class_exists( 'ZWSGR' ) ) {
 		}
 
 		function action__setup_theme() {
+			
 			if ( is_admin() ) {
 				ZWSGR()->admin = new ZWSGR_Admin;
 				ZWSGR()->admin->action = new ZWSGR_Admin_Action;
-				ZWSGR()->admin->filter = new ZWSGR_Admin_Filter;
-				
-			} else {
-				ZWSGR()->front = new ZWSGR_Front;
-				ZWSGR()->front->action = new ZWSGR_Front_Action;
-				ZWSGR()->front->filter = new ZWSGR_Front_Filter;
-				
+				ZWSGR()->admin->filter = new ZWSGR_Admin_Filter;	
 			}
+
 			ZWSGR()->lib = new ZWSGR_Lib;
 				
 		}
 	}
-}
 
-function ZWSGR() {
-	return ZWSGR::instance();
+	function ZWSGR() {
+		return ZWSGR::instance();
+	}
+
+	new ZWSGR();
 }
-ZWSGR();

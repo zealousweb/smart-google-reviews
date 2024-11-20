@@ -1,8 +1,8 @@
 <?php
 /**
- * ZWSGR_JWT_HANDLER Class
+ * Zwsgr_Jwt_Handler Class
  *
- * Handles the Toeken verification and management.
+ * Handles the Token verification and management.
  *
  * @package WordPress
  * @subpackage Smart Google Reviews
@@ -13,9 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'ZWSGR_JWT_HANDLER' ) ) {
+if ( ! class_exists( 'Zwsgr_Jwt_Handler' ) ) {
     
-    class ZWSGR_JWT_HANDLER {
+    class Zwsgr_Jwt_Handler {
 
         private $jwt_handler;
 
@@ -66,11 +66,31 @@ if ( ! class_exists( 'ZWSGR_JWT_HANDLER' ) ) {
         
             return "$base64UrlHeader.$base64UrlPayload.$base64UrlSignature";
 
-        } 
+        }
 
+        /**
+         * Verifies the given JWT token by decoding its parts and checking the signature.
+         * 
+         * - Decodes the JWT header and payload from Base64 URL format.
+         * - Retrieves the JWT secret for the user from the database.
+         * - Verifies the token's signature using HMAC SHA256.
+         * - Returns the decoded payload if the signature is valid, otherwise returns false.
+         *
+         * @param string $zwsgr_jwt_token The JWT token to be verified.
+         * @return array|false The decoded payload if the signature is valid, otherwise false.
+         */
         public function zwsgr_verify_jwt_token($zwsgr_jwt_token) {
 
-            // Helper function to handle Base64 URL decoding
+            /**
+             * Decodes a Base64 URL encoded string.
+             * 
+             * - Replaces URL-safe characters with standard Base64 characters.
+             * - Adds padding if necessary to make the string length a multiple of 4.
+             * - Decodes the string using PHP's base64_decode function.
+             *
+             * @param string $data The Base64 URL encoded string to decode.
+             * @return string The decoded string.
+             */
             function zwsgr_base64url_decode($data) {
                 $data = str_replace(['-', '_'], ['+', '/'], $data);
                 $padding = strlen($data) % 4;
@@ -90,15 +110,26 @@ if ( ! class_exists( 'ZWSGR_JWT_HANDLER' ) ) {
             $signature_provided  = $parts[2];
 
         
-            // Retrieve the secret for the user ID in the payload
+            // Retrieve the secret for the site_url in the payload
             $zwsgr_oauth_id = get_posts([
                 'post_type' => 'zwsgr_oauth_data',
                 'posts_per_page' => 1,
                 'fields' => 'ids',
                 'meta_query' => [
+                    'relation' => 'AND', // Ensures all conditions must be met
                     [
-                        'key' => 'zwsgr_user_name', 
-                        'value' => $zwsgr_oauth_payload['zwsgr_user_name'], 
+                        'key' => 'zwsgr_user_name',
+                        'value' => $zwsgr_oauth_payload['zwsgr_user_name'],
+                        'compare' => '='
+                    ],
+                    [
+                        'key' => 'zwsgr_user_email',
+                        'value' => $zwsgr_oauth_payload['zwsgr_user_email'],
+                        'compare' => '='
+                    ],
+                    [
+                        'key' => 'zwsgr_user_site_url',
+                        'value' => $zwsgr_oauth_payload['zwsgr_user_site_url'],
                         'compare' => '='
                     ]
                 ]
@@ -130,12 +161,12 @@ if ( ! class_exists( 'ZWSGR_JWT_HANDLER' ) ) {
 
         // Getter method to access the client
         public function get_jwt_handler() {
-            return new ZWSGR_JWT_HANDLER();
+            return new Zwsgr_Jwt_Handler();
         }
 
     }
 
     // Instantiate the class
-    new ZWSGR_JWT_HANDLER();
+    new Zwsgr_Jwt_Handler();
 
 }

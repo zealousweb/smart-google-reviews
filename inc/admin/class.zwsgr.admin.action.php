@@ -10,7 +10,9 @@
  */
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 
@@ -37,7 +39,18 @@ if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 			);
 		}
 
-		// Display OAuth connection details in the meta box
+		/**
+		 * Displays OAuth connection details in the meta box.
+		 *
+		 * This function retrieves and displays metadata related to 
+		 * the OAuth connection for a given post. The metadata includes:
+		 * - Personal information: user email, name, and site URL.
+		 * - Access information: access token, refresh token, JWT secret, JWT token, and OAuth status.
+		 *
+		 * All fields are displayed as read-only inputs for informational purposes.
+		 *
+		 * @param WP_Post $zwsgr_oauth_post The current post object.
+		 */
 		function zwsgr_display_oauth_meta_box__callback($zwsgr_oauth_post) {
 
 			// Retrieve stored meta values for OAuth connection details
@@ -98,8 +111,15 @@ if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 		/**
 		 * Registers the custom post type for OAuth Connections.
 		 *
-		 * This post type is used to store OAuth connection data securely.
-		 * The data includes user details, access tokens, refresh tokens, and other OAuth-related information.
+		 * Creates a secure, non-public custom post type to store OAuth data, such as 
+		 * user details, access tokens, and refresh tokens, for administrative use only.
+		 *
+		 * Key Features:
+		 * - Non-public and excluded from search.
+		 * - Accessible via the WordPress admin menu.
+		 * - Supports only 'read' capability for restricted access.
+		 *
+		 * @return void
 		 */
 		function zwsgr_register_oauth_connections_cpt() {
 
@@ -128,7 +148,7 @@ if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 				'public'                => false,
 				'publicly_queryable'    => false,
 				'show_ui'               => true,
-				'delete_with_user'      => true,
+				'delete_with_user'      => false,
 				'show_in_rest'          => false,
 				'show_in_menu'          => true, 
 				'menu_position' 		=> 79,
@@ -139,17 +159,16 @@ if ( !class_exists( 'ZWSGR_Admin_Action' ) ){
 				'show_in_nav_menus'     => false,
 				'exclude_from_search'   => true,
 				'capabilities'          => array(
-					'read'                => true,
-					'create_posts'        => false,
-					'publish_posts'       => false,
+					'read'                => true
 				),
 				'map_meta_cap'          => true,
 				'hierarchical'          => false,
-				'supports'              => array('title'),  // Supports title and custom fields
+				'supports'              => array('title'),
 			);
 		
 			// Register the custom post type with WordPress
 			register_post_type('zwsgr_oauth_data', $args);
+			
 		}
 
 	}
