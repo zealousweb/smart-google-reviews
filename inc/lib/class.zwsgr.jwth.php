@@ -118,11 +118,6 @@ if ( ! class_exists( 'Zwsgr_Jwt_Handler' ) ) {
                 'meta_query' => [
                     'relation' => 'AND', // Ensures all conditions must be met
                     [
-                        'key' => 'zwsgr_user_name',
-                        'value' => $zwsgr_oauth_payload['zwsgr_user_name'],
-                        'compare' => '='
-                    ],
-                    [
                         'key' => 'zwsgr_user_email',
                         'value' => $zwsgr_oauth_payload['zwsgr_user_email'],
                         'compare' => '='
