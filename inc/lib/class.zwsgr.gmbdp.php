@@ -162,8 +162,9 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Data_Processor' ) ) {
                                     // Construct the redirect URL with the authorization code and consent
                                     $zwsgr_redirect_url = add_query_arg(
                                         array(
-                                            'auth_code' => $zwsgr_auth_code,
-                                            'consent'   => 'true'
+                                            'auth_code'  => $zwsgr_auth_code,
+                                            'user_email' => $zwsgr_google_email,
+                                            'consent'    => 'true'
                                         ),
                                         $zwsgr_user_site_url
                                     );
