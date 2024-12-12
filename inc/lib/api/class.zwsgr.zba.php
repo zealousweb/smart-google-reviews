@@ -254,31 +254,32 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                 if ($zwsgr_jwt_token) {
 
                     // Return the JWT token as JSON on success
-                    wp_send_json_success([
-                        'code'    => 'jwt_token_granted',
-                        'message' => 'The JWT token has been successfully granted.',
-                        'data'    => [
-                            'zwsgr_jwt_token' => $zwsgr_jwt_token
-                        ]
+                    $zwsgr_response = new WP_REST_Response([
+                        'zwsgr_jwt_token' => $zwsgr_jwt_token
                     ]);
+                    $zwsgr_response->set_status(200);
+                    return $zwsgr_response;
 
                 } else {
-                    
-                    // Return an error if the JWT token is not found
-                    wp_send_json_error([
-                        'code'    => 'jwt_token_missing',
-                        'message' => 'JWT token not found for the provided OAuth ID.'
-                    ], 400);
 
+                    // Return an error if the JWT token is not found
+                    $zwsgr_response = new WP_REST_Response([
+                        'error' => 'jwt_token_missing',
+                        'message' => 'JWT token not found for the provided OAuth ID.'
+                    ]);
+                    $zwsgr_response->set_status(400);
+                    return $zwsgr_response;
+                    
                 }
 
             } else {
 
-                // Invalid or expired authorization code
-                wp_send_json_error([
-                    'code'    => 'invalid_authorization_code',
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'invalid_authorization_code',
                     'message' => 'The authorization code is either invalid or expired. Please try again with a valid code.'
-                ], 401);
+                ]);
+                $zwsgr_response->set_status(401);
+                return $zwsgr_response;
 
             }
             
@@ -305,10 +306,14 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
 
             // If the JWT token is invalid or expired, return an error
             if (!$zwsgr_jwt_payload) {
-                wp_send_json_error([
-                    'code' => 'invalid_jwt_token',
-                    'message' => 'The JWT token is invalid or has expired. Please authenticate again to continue.',
-                ], 401);
+
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'invalid_jwt_token',
+                    'message' => 'The JWT token is invalid or has expired. Please authenticate again to continue.'
+                ]);
+                $zwsgr_response->set_status(401);
+                return $zwsgr_response;
+
             }
         
             // Retrieve the oAuth ID associated with the user ID in the JWT payload
@@ -327,10 +332,14 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
         
             // If no OAuth connection is found, return an error
             if (!$zwsgr_oauth_id) {
-                wp_send_json_error([
-                    'code' => 'oauth_connection_missing',
-                    'message' => 'OAuth connection not found. Please verify your connection settings or contact support for assistance.',
-                ], 404);
+
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'oauth_connection_missing',
+                    'message' => 'OAuth connection not found. Please verify your connection settings or contact support for assistance.'
+                ]);
+                $zwsgr_response->set_status(404);
+                return $zwsgr_response;
+
             }
 
             // Retrieve the stored refresh token from the database
@@ -338,22 +347,29 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
 
             // If no refresh token is found, return an error
             if (!$zwsgr_gmb_refresh_token) {
-                wp_send_json_error([
-                    'code'    => 'missing_refresh_token',
-                    'message' => 'Refresh token not found. Please authenticate again.',
-                ], 400);
+
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'missing_refresh_token',
+                    'message' => 'Refresh token not found. Please authenticate again.'
+                ]);
+                $zwsgr_response->set_status(400);
+                return $zwsgr_response;
+
             }
             
             // Attempt to refresh the access token using the stored refresh token
             try {
                 $this->client->refreshToken($zwsgr_gmb_refresh_token);
             } catch (Exception $e) {
+
                 // If the token refresh fails, return an error
-                wp_send_json_error([
-                    'code'    => 'token_refresh_failed',
-                    'message' => 'Failed to refresh the token. Please try again later.',
-                    'error'   => $e->getMessage()
-                ], 500);
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'token_refresh_failed',
+                    'message' => $e->getMessage()
+                ]);
+                $zwsgr_response->set_status(500);
+                return $zwsgr_response;
+
             }
 
             // Retrieve the new access token from the client
@@ -361,19 +377,23 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
         
             // If the new access token is not valid, return an error
             if (!$zwsgr_new_access_token || !isset($zwsgr_new_access_token['access_token'])) {
-                wp_send_json_error([
-                    'code' => 'token_refresh_failed',
-                    'message' => 'Failed to refresh access token. Please try again or contact support.',
-                ], 401);
+
+                // If the token refresh fails, return an error
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'token_refresh_failed',
+                    'message' => 'Failed to refresh access token. Please try again or contact support.'
+                ]);
+                $zwsgr_response->set_status(401);
+                return $zwsgr_response;
+
             }
 
             // Return a success response with the new access token
-            wp_send_json_success([
-                'message' => 'Access token refreshed successfully.',
-                'data'    => [
-                    'access_token' => $zwsgr_new_access_token['access_token']
-                ]
-            ], 200);
+            $zwsgr_response = new WP_REST_Response([
+                'access_token' => $zwsgr_new_access_token['access_token']
+            ]);
+            $zwsgr_response->set_status(200);
+            return $zwsgr_response;
 
         }
 
