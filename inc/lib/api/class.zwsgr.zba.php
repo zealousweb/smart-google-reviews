@@ -89,10 +89,16 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
 
             // Validate that required fields are provided in the POST request
             if ( empty($zwsgr_user_name) || empty($zwsgr_user_site_url)) {
-                wp_send_json_error([
-                    'code' => 'missing_required_fields',
-                    'message' => 'Required data is missing: user_name and site_url. Please provide all the necessary fields.',
-                ], 400);
+
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'missing_required_fields',
+                    'message' => 'Required data is missing: user_name and site_url. Please provide all the necessary fields.'
+                ]);
+
+                $zwsgr_response->set_status(400);
+
+                return $zwsgr_response;
+
             }
 
             // Check if a oAuth data already exists with the same site_url
@@ -132,10 +138,16 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
 
                 // Handle any errors during the post update
                 if (is_wp_error($zwsgr_oauth_id)) {
-                    wp_send_json_error([
-                        'code'    => 'oauth_update_failed',
+
+                    $zwsgr_response = new WP_REST_Response([
+                        'error' => 'oauth_update_failed',
                         'message' => 'Failed to update OAuth data. Please try again later or contact support.'
-                    ], 500);
+                    ]);
+    
+                    $zwsgr_response->set_status(500);
+    
+                    return $zwsgr_response;
+
                 }
 
             } else {
@@ -145,10 +157,16 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
 
                 // Handle any errors during the post insertion
                 if (is_wp_error($zwsgr_oauth_id)) {
-                    wp_send_json_error([
-                        'code'    => 'oauth_creation_failed',
+
+                    $zwsgr_response = new WP_REST_Response([
+                        'error' => 'oauth_creation_failed',
                         'message' => 'Failed to create OAuth data. Please try again later or contact support.'
-                    ], 500); // 500 Internal Server Error
+                    ]);
+    
+                    $zwsgr_response->set_status(500);
+    
+                    return $zwsgr_response;
+
                 }
 
             }
@@ -166,23 +184,25 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
 
             // Check if the OAuth URL was generated successfully
             if ($zwsgr_oauth_url) {
-        
-                // Send a success response with the auth_url in JSON format
-                wp_send_json_success([
-                    'code'    => 'auth_url_generated',
-                    'message' => 'The authentication URL has been successfully generated. Please visit the link to authenticate.',
-                    'data'    => [
-                        'zwsgr_oauth_url' => $zwsgr_oauth_url
-                    ]
+
+                $zwsgr_response = new WP_REST_Response([
+                    'zwsgr_oauth_url' => $zwsgr_oauth_url
                 ]);
+
+                $zwsgr_response->set_status(200);
+
+                return $zwsgr_response;
 
             } else {
 
-                 // If OAuth URL wasn't generated, send an error response
-                wp_send_json_error([
-                    'code'    => 'auth_url_generaton_error',
+                $zwsgr_response = new WP_REST_Response([
+                    'error' => 'auth_url_generaton_error',
                     'message' => 'Failed to generate the OAuth URL. Please try again later.'
-                ], 500);
+                ]);
+
+                $zwsgr_response->set_status(400);
+
+                return $zwsgr_response;
 
             }
     
