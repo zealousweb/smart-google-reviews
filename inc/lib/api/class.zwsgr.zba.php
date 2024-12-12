@@ -257,7 +257,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     $zwsgr_response = new WP_REST_Response([
                         'zwsgr_jwt_token' => $zwsgr_jwt_token
                     ]);
+
                     $zwsgr_response->set_status(200);
+                    
                     return $zwsgr_response;
 
                 } else {
@@ -267,7 +269,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                         'error' => 'jwt_token_missing',
                         'message' => 'JWT token not found for the provided OAuth ID.'
                     ]);
+
                     $zwsgr_response->set_status(400);
+                    
                     return $zwsgr_response;
                     
                 }
@@ -278,7 +282,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     'error' => 'invalid_authorization_code',
                     'message' => 'The authorization code is either invalid or expired. Please try again with a valid code.'
                 ]);
+                
                 $zwsgr_response->set_status(401);
+                
                 return $zwsgr_response;
 
             }
@@ -311,7 +317,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     'error' => 'invalid_jwt_token',
                     'message' => 'The JWT token is invalid or has expired. Please authenticate again to continue.'
                 ]);
+
                 $zwsgr_response->set_status(401);
+                
                 return $zwsgr_response;
 
             }
@@ -337,7 +345,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     'error' => 'oauth_connection_missing',
                     'message' => 'OAuth connection not found. Please verify your connection settings or contact support for assistance.'
                 ]);
+
                 $zwsgr_response->set_status(404);
+                
                 return $zwsgr_response;
 
             }
@@ -352,7 +362,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     'error' => 'missing_refresh_token',
                     'message' => 'Refresh token not found. Please authenticate again.'
                 ]);
+
                 $zwsgr_response->set_status(400);
+                
                 return $zwsgr_response;
 
             }
@@ -367,7 +379,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     'error' => 'token_refresh_failed',
                     'message' => $e->getMessage()
                 ]);
+
                 $zwsgr_response->set_status(500);
+                
                 return $zwsgr_response;
 
             }
@@ -383,7 +397,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
                     'error' => 'token_refresh_failed',
                     'message' => 'Failed to refresh access token. Please try again or contact support.'
                 ]);
+
                 $zwsgr_response->set_status(401);
+                
                 return $zwsgr_response;
 
             }
@@ -392,7 +408,9 @@ if ( ! class_exists( 'Zwsgr_Backend_API' ) ) {
             $zwsgr_response = new WP_REST_Response([
                 'access_token' => $zwsgr_new_access_token['access_token']
             ]);
+
             $zwsgr_response->set_status(200);
+            
             return $zwsgr_response;
 
         }
