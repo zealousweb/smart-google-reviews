@@ -1,6 +1,6 @@
 <?php
 /**
- * ZWSGR Class
+ * ZWSSGR Class
  *
  * Handles the plugin functionality.
  *
@@ -12,12 +12,12 @@
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
-if ( !class_exists( 'ZWSGR' ) ) {
+if ( !class_exists( 'ZWSSGR' ) ) {
 
 	/**
-	 * The main ZWSGR class
+	 * The main ZWSSGR class
 	 */
-	class ZWSGR {
+	class ZWSSGR {
 		
 		private static $_instance = null;
 
@@ -39,19 +39,19 @@ if ( !class_exists( 'ZWSGR' ) ) {
 		function action__setup_theme() {
 			
 			if ( is_admin() ) {
-				ZWSGR()->admin = new ZWSGR_Admin;
-				ZWSGR()->admin->action = new ZWSGR_Admin_Action;
-				ZWSGR()->admin->filter = new ZWSGR_Admin_Filter;	
+				ZWSSGR()->admin = new ZWSSGR_Admin;
+				ZWSSGR()->admin->action = new ZWSSGR_Admin_Action;
+				ZWSSGR()->admin->filter = new ZWSSGR_Admin_Filter;	
 			}
 
-			ZWSGR()->lib = new ZWSGR_Lib;
+			ZWSSGR()->lib = new ZWSSGR_Lib;
 				
 		}
 	}
 
-	function ZWSGR() {
-		return ZWSGR::instance();
+	function ZWSSGR() {
+		return ZWSSGR::instance();
 	}
 
-	new ZWSGR();
+	new ZWSSGR();
 }

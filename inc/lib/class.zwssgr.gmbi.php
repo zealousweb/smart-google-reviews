@@ -1,6 +1,6 @@
 <?php
 /**
- * Zwsgr_Google_My_Business_Initializer Class
+ * Zwssgr_Google_My_Business_Initializer Class
  *
  * Initialize GMB Client.
  *
@@ -13,19 +13,19 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'Zwsgr_Google_My_Business_Initializer' ) ) {
+if ( ! class_exists( 'Zwssgr_Google_My_Business_Initializer' ) ) {
 
     // Include the Google API Client's autoload file from the specified directory.
-    require_once ZWSGR_DIR . '/inc/lib/google-api-php-client/vendor/autoload.php';
+    require_once ZWSSGR_DIR . '/inc/lib/google-api-php-client/vendor/autoload.php';
 
     /**
-     * Class Zwsgr_Google_My_Business_Initializer
+     * Class Zwssgr_Google_My_Business_Initializer
      * 
      * This class is responsible for initializing the Google API client and configuring it
      * to interact with Google My Business API.
      * It handles authentication, client setup, and defines necessary scopes.
      */
-    class Zwsgr_Google_My_Business_Initializer {
+    class Zwssgr_Google_My_Business_Initializer {
 
         // The Google Client instance.
         private $client;
@@ -36,7 +36,7 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Initializer' ) ) {
             $this->client->setApplicationName('Smart Google Reviews');
             $this->client->setClientId('425400367447-r6rphvd0gcuriahkigm3mgs1v5pkmh1t.apps.googleusercontent.com');
             $this->client->setClientSecret('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');
-            $this->client->setRedirectUri('https://plugintest.siteproofs.com/connect-google');
+            $this->client->setRedirectUri('https://siteproofs.com/projects/zealousweb/plugindev/user-demo/connect-google');
             $this->client->addScope('https://www.googleapis.com/auth/userinfo.email');
             $this->client->addScope('https://www.googleapis.com/auth/business.manage');
             $this->client->setAccessType('offline');
@@ -56,6 +56,6 @@ if ( ! class_exists( 'Zwsgr_Google_My_Business_Initializer' ) ) {
     }
 
     // Instantiate the class
-    new Zwsgr_Google_My_Business_Initializer();
+    new Zwssgr_Google_My_Business_Initializer();
     
 }

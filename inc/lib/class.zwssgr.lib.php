@@ -1,6 +1,6 @@
 <?php
 /**
- * ZWSGR_Lib Class
+ * ZWSSGR_Lib Class
  *
  * Handles the plugin functionality.
  *
@@ -12,12 +12,12 @@
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
-if ( !class_exists( 'ZWSGR_Lib' ) ) {
+if ( !class_exists( 'ZWSSGR_Lib' ) ) {
 
 	/**
 	 * The main ZWSGR class
 	 */
-	class ZWSGR_Lib {
+	class ZWSSGR_Lib {
 		
 		function __construct() {
 			

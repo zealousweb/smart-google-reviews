@@ -1,6 +1,6 @@
 <?php
 /**
- * ZWSGR_Admin_Filter Class
+ * ZWSSGR_Admin_Filter Class
  *
  * Handles the admin functionality.
  *
@@ -14,12 +14,12 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( !class_exists( 'ZWSGR_Admin_Filter' ) ) {
+if ( !class_exists( 'ZWSSGR_Admin_Filter' ) ) {
 
 	/**
-	 *  The ZWSGR_Admin_Filter Class
+	 *  The ZWSSGR_Admin_Filter Class
 	 */
-	class ZWSGR_Admin_Filter {
+	class ZWSSGR_Admin_Filter {
 
 		function __construct() {
 

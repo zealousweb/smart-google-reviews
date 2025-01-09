@@ -26,32 +26,32 @@ if ( !defined( 'ABSPATH' ) ) exit;
  * @since 1.0.0
  */
 
-if ( !defined( 'ZWSGR_VERSION' ) ) {
-	define( 'ZWSGR_VERSION', '1.0.0' ); // Version of plugin
+if ( !defined( 'ZWSSGR_VERSION' ) ) {
+	define( 'ZWSSGR_VERSION', '1.0.0' ); // Version of plugin
 }
 
-if ( !defined( 'ZWSGR_FILE' ) ) {
-	define( 'ZWSGR_FILE', __FILE__ ); // Plugin File
+if ( !defined( 'ZWSSGR_FILE' ) ) {
+	define( 'ZWSSGR_FILE', __FILE__ ); // Plugin File
 }
 
-if ( !defined( 'ZWSGR_DIR' ) ) {
-	define( 'ZWSGR_DIR', dirname( __FILE__ ) ); // Plugin dir
+if ( !defined( 'ZWSSGR_DIR' ) ) {
+	define( 'ZWSSGR_DIR', dirname( __FILE__ ) ); // Plugin dir
 }
 
-if ( !defined( 'ZWSGR_URL' ) ) {
-	define( 'ZWSGR_URL', plugin_dir_url( __FILE__ ) ); // Plugin url
+if ( !defined( 'ZWSSGR_URL' ) ) {
+	define( 'ZWSSGR_URL', plugin_dir_url( __FILE__ ) ); // Plugin url
 }
 
-if ( !defined( 'ZWSGR_PLUGIN_BASENAME' ) ) {
-	define( 'ZWSGR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); // Plugin base name
+if ( !defined( 'ZWSSGR_PLUGIN_BASENAME' ) ) {
+	define( 'ZWSSGR_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); // Plugin base name
 }
 
-if ( !defined( 'ZWSGR_META_PREFIX' ) ) {
-	define( 'ZWSGR_META_PREFIX', 'zwsgr_' ); // Plugin metabox prefix
+if ( !defined( 'ZWSSGR_META_PREFIX' ) ) {
+	define( 'ZWSSGR_META_PREFIX', 'zwssgr_' ); // Plugin metabox prefix
 }
 
-if ( !defined( 'ZWSGR_PREFIX' ) ) {
-	define( 'ZWSGR_PREFIX', 'zwsgr' ); // Plugin prefix
+if ( !defined( 'ZWSSGR_PREFIX' ) ) {
+	define( 'ZWSSGR_PREFIX', 'zwssgr' ); // Plugin prefix
 }
 
 /**
@@ -60,18 +60,18 @@ if ( !defined( 'ZWSGR_PREFIX' ) ) {
 if ( !function_exists( 'ZWSGR' ) ) {
 
 	if ( is_admin() ) {
-		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.php' );
-		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.action.php' );
-		require_once( ZWSGR_DIR . '/inc/admin/class.' . ZWSGR_PREFIX . '.admin.filter.php' );		
+		require_once( ZWSSGR_DIR . '/inc/admin/class.' . ZWSSGR_PREFIX . '.admin.php' );
+		require_once( ZWSSGR_DIR . '/inc/admin/class.' . ZWSSGR_PREFIX . '.admin.action.php' );
+		require_once( ZWSSGR_DIR . '/inc/admin/class.' . ZWSSGR_PREFIX . '.admin.filter.php' );		
 	}
 
-	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.jwth.php' );	
-	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.gmbi.php' );
-	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.gmbdp.php' );
-	require_once( ZWSGR_DIR . '/inc/lib/api/class.' . ZWSGR_PREFIX . '.zba.php' );
-	require_once( ZWSGR_DIR . '/inc/lib/class.' . ZWSGR_PREFIX . '.lib.php' );
+	require_once( ZWSSGR_DIR . '/inc/lib/class.' . ZWSSGR_PREFIX . '.jwth.php' );	
+	require_once( ZWSSGR_DIR . '/inc/lib/class.' . ZWSSGR_PREFIX . '.gmbi.php' );
+	require_once( ZWSSGR_DIR . '/inc/lib/class.' . ZWSSGR_PREFIX . '.gmbdp.php' );
+	require_once( ZWSSGR_DIR . '/inc/lib/api/class.' . ZWSSGR_PREFIX . '.zba.php' );
+	require_once( ZWSSGR_DIR . '/inc/lib/class.' . ZWSSGR_PREFIX . '.lib.php' );
 
 	//Initialize all the things.
-	require_once( ZWSGR_DIR . '/inc/class.' . ZWSGR_PREFIX . '.php' );
+	require_once( ZWSSGR_DIR . '/inc/class.' . ZWSSGR_PREFIX . '.php' );
 
 }

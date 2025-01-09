@@ -1,6 +1,6 @@
 <?php
 /**
- * ZWSGR_Admin Class
+ * ZWSSGR_Admin Class
  *
  * Handles the admin functionality.
  *
@@ -14,12 +14,12 @@ if ( !defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( !class_exists( 'ZWSGR_Admin' ) ) {
+if ( !class_exists( 'ZWSSGR_Admin' ) ) {
 
 	/**
-	 * The ZWSGR_Admin Class
+	 * The ZWSSGR_Admin Class
 	 */
-	class ZWSGR_Admin {
+	class ZWSSGR_Admin {
 
 		function __construct() {
 			
