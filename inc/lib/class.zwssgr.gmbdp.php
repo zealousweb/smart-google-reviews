@@ -65,17 +65,17 @@ if ( ! class_exists( 'Zwssgr_Google_My_Business_Data_Processor' ) ) {
          */
         public function action__zwssgr_handle_oauth_flow() {
 
+            // Decode the 'state' parameter
+            $zwssgr_oauth_state = json_decode(urldecode($_GET['state']), true);
+
+            $zwssgr_user_name     = sanitize_text_field($zwssgr_oauth_state['zwssgr_user_name']);
+            $zwssgr_user_site_url = sanitize_text_field($zwssgr_oauth_state['zwssgr_user_site_url']);
+
             // Check if the 'code' and 'state' parameters are present
             if ( isset( $_GET['code'] ) && isset( $_GET['state'] ) ) {
-
-                // Decode the 'state' parameter
-                $zwssgr_oauth_state = json_decode(urldecode($_GET['state']), true);
         
                 // Retrieve the user's ID, email, and site URL from the 'state' parameter
                 if ( $zwssgr_oauth_state['zwssgr_user_name'] && $zwssgr_oauth_state['zwssgr_user_site_url']) {
-                    
-                    $zwssgr_user_name     = sanitize_text_field($zwssgr_oauth_state['zwssgr_user_name']);
-                    $zwssgr_user_site_url = sanitize_text_field($zwssgr_oauth_state['zwssgr_user_site_url']);
 
                     // Get the post ID for the 'zwssgr_oauth_data' post that matches all meta fields
                     $zwssgr_oauth_data_id = get_posts(array(
